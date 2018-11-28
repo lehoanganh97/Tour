@@ -1,1 +1,1 @@
-Tour
+Tour Booking Front-end
