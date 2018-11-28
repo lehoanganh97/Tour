@@ -1,0 +1,410 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+	
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="css/bootstrap.css">
+	
+	<!-- Theme style  -->
+	<link rel="stylesheet" href="css/style.css">
+
+	
+
+    <title>
+        My Map
+    </title>
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
+    <script src="lib/leaflet/leaflet.js"></script>
+    <script src="data/countries.geojson"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <style type="text/css">
+        #map { height :650px;  }
+        .legend { background : white; line-height : 1.5em}
+        .legend i { width : 5em; float : left }
+    </style>
+	</head>
+    
+	<body >
+	<div id="colorlib-page">
+		<div class="container-wrap">
+            <a href="#" class="js-colorlib-nav-toggle colorlib-nav-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"></a><button type="button" style="border-color: #e36a5f" class="btn btn-default navbar-btn"><a href="#content" style="color: #e36a5f">Home</a></button><button type="button" class="btn btn-default navbar-btn">Sign in</button>
+		<aside id="colorlib-aside" role="complementary" class="border js-fullheight">
+			<div class="text-center">
+				<div class="author-img" style="background-image: url(iconTeam.JPG);"></div>
+				<h1 id="colorlib-logo" style="font-family: 'Dancing Script', cursive;"><a href="#"><span style="color: #e36a5f; font-size: 34px">Xe Om Trip</span></a></h1>
+                
+                <div class="position">
+                    <form name="places">
+                        <input type="hidden" name="title_price" id="input_title" value="">
+                        <input type="hidden" name="total_price" id="input_total" value="">
+                        <button class="btn btn-flat btn-lg" style="background-color: #e36a5f" type="submit" onclick="btn_submit()" ><span style="font-size: 16px; font-weight: bold; font-family: inherit;">Booking Now</span></button>
+                    </form>
+                </div>
+			</div>
+			<nav id="colorlib-main-menu" role="navigation" class="navbar">
+				<div id="navbar" class="collapse">
+					<ul>
+
+                        <div class="constainer" style="width: 100%">         
+                          <table class="table" style="width: 100%; table-layout: fixed; ">
+                            <thead>
+                              <tr>
+                                <th style="width: 70%">List Place You Choose :</th>
+                                <th  style="width: 30%"></th>
+                              </tr>
+                            </thead>
+                            <tbody id="result">
+<!--
+                              <tr>
+                                <td >Independence Palace | Price : $8</td>
+                                <td>Dogrgrfdgdffde</td>
+                              </tr>
+                              
+                              <div id="result">
+                             
+                            </div>
+-->
+                          </table>
+                        </div>
+                        
+                       
+                        <div id="result"></div>
+        
+                        <div id="totalPrice" hidden>Total to Pay : $<span id="price"></span></div>
+					</ul>
+				</div>
+			</nav>
+
+			
+
+		</aside>
+
+		<div id="colorlib-main">
+			<div id="map"></div>
+
+			
+		</div><!-- end:colorlib-main -->
+	</div><!-- end:container-wrap -->
+	</div><!-- end:colorlib-page -->
+
+	<!-- jQuery -->
+
+	
+	
+	<!-- MAIN JS -->
+	
+    <script src="http://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+	    <script src="leaflet-providers.js"></script>
+		<script>
+			function getCountryColor(popEst){
+				if(popEst > 100000000){
+					return 'red';
+				}else if(popEst > 50000000){
+					return 'blue';
+				}else{
+					return 'green';
+				}
+			}
+			
+			function countriesStyle(feature){
+				return {
+					fillColor : getCountryColor(feature.properties.pop_est),
+					weight : 2,
+					opacity : 1,
+					color : 'white',
+					dashArray : 3,
+					fillOpacity : 0.7
+				}
+			}
+			
+//            var map = L.map('map', {
+//			center: [10.766736, 106.692151],
+//			zoom: 15,
+//			zoomControl: false
+//		});
+
+		
+            
+			var map = L.map('map').setView([10.774502, 106.697973], 14);
+            //var defaultLayer = L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">BlackHole</a>'
+}).addTo(map);
+
+//			var countriesLayer = L.geoJson(
+//				countries,
+//				{style : countriesStyle}
+//			).addTo(map);
+//			// map.fitBounds(countriesLayer.getBounds());
+//			
+//			var legend = L.control({position : 'bottomright'});
+//			legend.onAdd = function(map){
+//				var div = L.DomUtil.create('div', 'legend');
+//				var labels = [
+//					"Population greater than 100000000", 
+//					"Population greater than 50000000", 
+//					"Population equal or less than 50000000"
+//				];
+//				var grades = [100000001, 50000001, 50000000];
+//				div.innerHTML = '<div><b>Legend</b></div>';
+//				for(var i = 0; i < grades.length; i++){
+//					div.innerHTML += '<i style="background:' 
+//					+ getCountryColor(grades[i]) + '">&nbsp;&nbsp;</i>&nbsp;&nbsp;'
+//					+ labels[i] + '<br />';
+//				}
+//				return div;
+//			}
+//			legend.addTo(map);
+            
+			//icon
+//            var greenIcon = L.icon({
+//                iconUrl: 'lib/leaflet/images/marker-icon.png'
+//                shadowUrl: 'lib/leaflet/images/marker-shadow.png',
+//
+//                iconSize:     [38, 95], // size of the icon
+//                shadowSize:   [50, 64], // size of the shadow
+//                iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+//                shadowAnchor: [4, 62],  // the same for the shadow
+//                popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+//            });
+            //icon
+            
+            
+//			var point = [10.766736, 106.692151];
+//			var myMarker = L.marker(point);
+//			myMarker.addTo(map);
+//			myMarker.bindPopup(
+//				'<b>Sarajevo</b><div><img style="width:100%" src="http://upload.wikimedia.org/wikipedia/commons/f/fc/Sarajevo.jpg" alt="image" /></div><button onclick="list_location(\'result\');" >Add</button>',
+//				{minWidth :100}
+//			);
+            
+            
+            markers = [{
+                "name": "Nhu Lan Bread",
+                "url": "",
+                "order" : "1",
+                "img" : "http://cafefcdn.com/thumb_w/650/2017/photo1512551207705-1512551207987-1512620980236.jpg",
+                "price" : "8",
+                "lat": 10.771256, 
+                "lng": 106.703952 
+            }, {
+                "name": "Moc Broken rice",
+                "url": "",
+                "order" : "2",
+                "img" : "https://www.bepgiadinh.com/wp-content/uploads/2016/03/09/image-5-480x271.png",
+                "price" : "12",
+                "lat": 10.774502,  
+                "lng": 106.697973
+            },{
+                "name": "Thin Pho",
+                "url": "",
+                "order" : "3",
+                "img" : "http://ruoi.com.vn/wp-content/uploads/2016/03/pho-ha-noi.jpg",
+                "price" : "15",
+                "lat": 10.781146, 
+                "lng": 106.692417
+            },{
+                "name": "Sugarcane juice",
+                "url": "",
+                "order" : "4",
+                "img" : "https://dulichsinhthaimientay.com/quannguyenphat/uploads/2017/12/nuoc-mia-my-tho.jpg",
+                "price" : "3",
+                "lat": 10.773827, 
+                "lng": 106.701395 
+            },{
+                "name": "Vy Coffee",
+                "url": "",
+                "order" : "5",
+                "img" : "https://images.foody.vn/res/g23/226051/prof/s640x400/foody-mobile-t5-jpg-730-635956262536892178.jpg",
+                "price" : "5",
+                "lat": 10.771646, 
+                "lng": 106.695356  
+            },{
+                "name": "Coconut juice",
+                "url": "",
+                "order" : "6",
+                "img" : "https://anh.24h.com.vn/upload/3-2017/images/2017-08-25/1503630026-150362921537180-1.jpg",
+                "price" : "5",
+                "lat": 10.786340, 
+                "lng": 106.689502 
+            },{
+                "name": "Ganh Bun bo",
+                "url": "",
+                "order" : "7",
+                "img" : "https://vcdn-ngoisao.vnecdn.net/2018/01/19/1-8515-1516314392.jpg",
+                "price" : "15",
+                "lat": 10.789086,  
+                "lng": 106.685260 
+            },{
+                "name": "Thao snails ",
+                "url": "",
+                "order" : "8",
+                "img" : "http://amthucminhthu.com/wp-content/uploads/2018/03/S%C3%B2-huy%E1%BA%BFt-la-c%C3%B3t.jpg",
+                "price" : "20",
+                "lat": 10.760787, 
+                "lng": 106.703350
+            },{
+                "name": "Ben Thanh market ",
+                "url": "",
+                "order" : "9",
+                "img" : "https://upload.wikimedia.org/wikipedia/commons/9/91/Ben_Thanh_market_2.jpg",
+                "price" : "8",
+                "lat": 10.772479, 
+                "lng": 106.698347
+            },{
+                "name": "Duc Ba Church",
+                "url": "",
+                "order" : "10",
+                "img" : "https://media6.trover.com/T/5531c451ae8d8a61bc003728/fixedw_large_4x.jpg",
+                "price" : "8",
+                "lat": 10.779808,
+                "lng": 106.699026
+            },{
+                "name": "Saigon Opera House ",
+                "url": "",
+                "order" : "11",
+                "img" : "http://i2.wp.com/ilovesaigon.net/wp-content/uploads/2017/11/sai-gon-opera-house-2.jpg?fit=770%2C450",
+                "price" : "10",
+                "lat": 10.776667, 
+                "lng": 106.703112
+            },{
+                "name": "Bui Vien walking street",
+                "url": "",
+                "order" : "12",
+                "img" : "http://static2.yan.vn/YanNews/2167221/201708/20170821-121621-20170820-114119-_mg_6692_600x347_600x347.jpg",
+                "price" : "7",
+                "lat": 10.766736, 
+                "lng": 106.692151
+            },{
+                "name": "Independence Palace",
+                "url": "",
+                "order" : "13",
+                "img" : "https://cdn3.ivivu.com/2016/04/lan-dau-mo-cua-phong-lam-viec-cua-ong-nguyen-cao-ky-ivivu-1.jpg",
+                "price" : "8",
+                "lat": 10.777190, 
+                "lng": 106.695501 
+            },{
+                "name": "Floating Market",
+                "url": "",
+                "order" : "14",
+                "img" : "https://kinhnghiem.dulichvietnam.com.vn/wp-content/uploads/2018/01/cho-noi-cai-rang-can-tho.jpg",
+                "price" : "8",
+                "lat": 10.760800,  
+                "lng": 106.699490 
+            }];
+            
+            var price = 0;
+            var flag = 0;
+            localStorage.clear();
+            for (var i = 0; i < markers.length; ++i) {
+                L.marker([markers[i].lat, markers[i].lng], {
+                    icon: new L.DivIcon({
+                        className: 'my-div-icon',
+                        html: '<span style="color: red; text-transform: uppercase; font-weight: bold">' + markers[i].name + '</span>'
+                    })
+                }).addTo(map);
+                L.marker([markers[i].lat, markers[i].lng]).addTo(map).bindPopup(markers[i].name+'<span hidden id="order">'+i+'</span>'+'<div><img style="width:100%" src="'+markers[i].img+'"alt="image" /></div><div style="color: darkcyan">Price : $'+markers[i].price+'</div><button onclick="list_location();" >Add</button>');
+            }
+            
+//            L.marker([markers[0].lat, markers[0].lng]).addTo(map).bindPopup(markers[0].name+'<div><img style="width:100%" src="'+markers[0].img+'"alt="image" /></div><div style="color: darkcyan">Price : '+markers[0].price+'</div><button onclick="list_location(\'result\', markers[0].name);" >Add</button>');
+//            
+//            L.marker([markers[1].lat, markers[1].lng]).addTo(map).bindPopup(markers[1].name+'<div><img style="width:100%" src="'+markers[1].img+'"alt="image" /></div><div style="color: darkcyan">Price : '+markers[1].price+'</div><button onclick="list_location(\'result\', markers[1].name);" >Add</button>');
+//            
+//            L.marker([markers[2].lat, markers[2].lng]).addTo(map).bindPopup(markers[2].name+'<div><img style="width:100%" src="'+markers[2].img+'"alt="image" /></div><div style="color: darkcyan">Price : '+markers[2].price+'</div><button onclick="list_location(\'result\', markers[2].name);" >Add</button>');
+            
+		</script>
+
+        <script type="text/javascript">
+            function list_location(){    
+                
+                if (flag < 4){
+                    var j=document.getElementById("order").textContent;
+                    //alert(id+" "+i+" "+jj);
+                    // Check browser support
+                    if (typeof(Storage) !== "undefined") {
+                        if (localStorage.getItem(j) == null){
+                            // Store
+                            localStorage.setItem(j, markers[j].name);
+                            // Retrieve
+                            //document.getElementById("result").innerHTML = localStorage.getItem("name");
+                            //document.getElementById("result").append('<div>' +markers[jj].name + '</div>');
+                            $("#result").append("<tr id = \"p"+j+"\"><td " + ">" + markers[j].name + " | Price : $"+markers[j].price +"</td>"+ "<td><button type=\"button\" onclick=\"delete_Place("+j+")\">Delete</button></td></tr>");
+
+                            flag = +flag + 1;
+                            //alert(localStorage.getItem("name"));
+
+                            //sum total :
+                            price = +price + +markers[j].price;
+                            
+                            //show total :
+                            //show_Tag("lable_place");
+                            show_Tag("totalPrice");
+                            document.getElementById("price").innerHTML = price;
+                            
+                            //update data
+                            document.places.title_price.value = "";
+                            document.places.total_price.value = "";
+                        }
+
+                    } else {
+                        document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+
+                    }
+                } else{
+                    alert("You just only choose under 4 places");
+                }
+                
+               // alert(flag);
+                
+            }
+            
+            function show_Tag(id){
+                var pal = document.getElementById(id);              
+                pal.style.display = 'block';
+            }
+           
+            function hidden_Tag(id){
+                var pal = document.getElementById(id);              
+                pal.style.display = 'none';
+            }
+            
+            function delete_Place(idd){
+                //document.getElementById(id).removeChild
+                //alert(idd);
+                var r = document.getElementById("p"+idd);
+                price = +price - +markers[idd].price;
+                r.remove();
+                
+                flag = +flag - 1;
+                document.getElementById("price").innerHTML = price;
+                //alert(flag);
+                localStorage.removeItem(idd);
+                if (flag == 0){
+                    hidden_Tag("lable_place");
+                    hidden_Tag("totalPrice");
+                }
+            }
+            
+            function btn_submit(){
+                var //values = [],
+                    keys = Object.keys(localStorage),
+                    i = keys.length;
+                var st = "";
+                
+                while ( i-- ) {
+                    st += localStorage.getItem(keys[i]);
+                    st += "<br>";
+                }
+                document.places.title_price.value = st;
+                document.places.total_price.value = price;
+                alert(document.places.total_price.value);
+            }
+            
+        </script>
+	</body>
+</html>
+
